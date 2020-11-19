@@ -2848,5 +2848,12 @@ namespace CyControl
             list.Add(":00000001FF");
 
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {   
+            // show form 2 in a new form.
+            Form2 f2 = new Form2();
+            f2.Show(this);
+        }
     }
 }

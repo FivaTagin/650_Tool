@@ -188,6 +188,7 @@ namespace CyControl
             this.DescrTab = new System.Windows.Forms.TabPage();
             this.DescText = new System.Windows.Forms.TextBox();
             this.XferTab = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
             this.IsPacket = new System.Windows.Forms.CheckBox();
             this.Clear = new System.Windows.Forms.Button();
             this.XferDataBox = new System.Windows.Forms.MaskedTextBox();
@@ -218,7 +219,6 @@ namespace CyControl
             this.MSCDeviceBox = new System.Windows.Forms.CheckBox();
             this.FOpenDialog = new System.Windows.Forms.OpenFileDialog();
             this.FSave = new System.Windows.Forms.SaveFileDialog();
-            this.button1 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.StatusBar.SuspendLayout();
@@ -715,6 +715,16 @@ namespace CyControl
             this.XferTab.TabIndex = 1;
             this.XferTab.Text = "Data Transfers";
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(325, 63);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(85, 26);
+            this.button1.TabIndex = 28;
+            this.button1.Text = "ShowDatainGraph";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // IsPacket
             // 
             this.IsPacket.AutoSize = true;
@@ -1015,15 +1025,6 @@ namespace CyControl
             // FSave
             // 
             this.FSave.Title = "Save the script file as";
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(325, 63);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(85, 26);
-            this.button1.TabIndex = 28;
-            this.button1.Text = "ShowDatainGraph";
-            this.button1.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
