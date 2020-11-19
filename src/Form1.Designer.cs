@@ -218,9 +218,11 @@ namespace CyControl
             this.MSCDeviceBox = new System.Windows.Forms.CheckBox();
             this.FOpenDialog = new System.Windows.Forms.OpenFileDialog();
             this.FSave = new System.Windows.Forms.SaveFileDialog();
+            this.button1 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.StatusBar.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Split1)).BeginInit();
             this.Split1.Panel1.SuspendLayout();
             this.Split1.Panel2.SuspendLayout();
             this.Split1.SuspendLayout();
@@ -255,7 +257,7 @@ namespace CyControl
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(93, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -324,14 +326,14 @@ namespace CyControl
             // UsersGuide
             // 
             this.UsersGuide.Name = "UsersGuide";
-            this.UsersGuide.Size = new System.Drawing.Size(137, 22);
+            this.UsersGuide.Size = new System.Drawing.Size(135, 22);
             this.UsersGuide.Text = "Help Topics";
             this.UsersGuide.Click += new System.EventHandler(this.UsersGuide_Click);
             // 
             // AboutMenuItem
             // 
             this.AboutMenuItem.Name = "AboutMenuItem";
-            this.AboutMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.AboutMenuItem.Size = new System.Drawing.Size(135, 22);
             this.AboutMenuItem.Text = "About";
             this.AboutMenuItem.Click += new System.EventHandler(this.AboutMenuItem_Click);
             // 
@@ -682,6 +684,7 @@ namespace CyControl
             // XferTab
             // 
             this.XferTab.BackColor = System.Drawing.Color.Gainsboro;
+            this.XferTab.Controls.Add(this.button1);
             this.XferTab.Controls.Add(this.IsPacket);
             this.XferTab.Controls.Add(this.Clear);
             this.XferTab.Controls.Add(this.XferDataBox);
@@ -1013,6 +1016,15 @@ namespace CyControl
             // 
             this.FSave.Title = "Save the script file as";
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(325, 63);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(85, 26);
+            this.button1.TabIndex = 28;
+            this.button1.Text = "ShowDatainGraph";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1038,6 +1050,7 @@ namespace CyControl
             this.StatusBar.PerformLayout();
             this.Split1.Panel1.ResumeLayout(false);
             this.Split1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.Split1)).EndInit();
             this.Split1.ResumeLayout(false);
             this.gb.ResumeLayout(false);
             this.gb.PerformLayout();
@@ -1130,8 +1143,7 @@ namespace CyControl
         private System.Windows.Forms.ToolStripButton Record;
         private System.Windows.Forms.ToolStripButton Stop;
         private System.Windows.Forms.ToolStripButton Pause;
-
-
+        private System.Windows.Forms.Button button1;
     }
 }
 
