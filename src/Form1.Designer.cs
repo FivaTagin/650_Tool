@@ -184,10 +184,11 @@ namespace CyControl
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.DeviceTreeView = new System.Windows.Forms.TreeView();
-            this.TabPages = new System.Windows.Forms.TabControl();
+            this.tool650 = new System.Windows.Forms.TabControl();
             this.DescrTab = new System.Windows.Forms.TabPage();
             this.DescText = new System.Windows.Forms.TextBox();
             this.XferTab = new System.Windows.Forms.TabPage();
+            this.Button_Init = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.IsPacket = new System.Windows.Forms.CheckBox();
             this.Clear = new System.Windows.Forms.Button();
@@ -217,6 +218,10 @@ namespace CyControl
             this.CyUSBDeviceBox = new System.Windows.Forms.CheckBox();
             this.HIDDeviceBox = new System.Windows.Forms.CheckBox();
             this.MSCDeviceBox = new System.Windows.Forms.CheckBox();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.buttShowData = new System.Windows.Forms.Button();
+            this.initBut = new System.Windows.Forms.Button();
+            this.textBox3 = new System.Windows.Forms.TextBox();
             this.FOpenDialog = new System.Windows.Forms.OpenFileDialog();
             this.FSave = new System.Windows.Forms.SaveFileDialog();
             this.menuStrip1.SuspendLayout();
@@ -227,10 +232,11 @@ namespace CyControl
             this.Split1.Panel2.SuspendLayout();
             this.Split1.SuspendLayout();
             this.gb.SuspendLayout();
-            this.TabPages.SuspendLayout();
+            this.tool650.SuspendLayout();
             this.DescrTab.SuspendLayout();
             this.XferTab.SuspendLayout();
             this.DriversTab.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -569,7 +575,7 @@ namespace CyControl
             // 
             // Split1.Panel2
             // 
-            this.Split1.Panel2.Controls.Add(this.TabPages);
+            this.Split1.Panel2.Controls.Add(this.tool650);
             this.Split1.Size = new System.Drawing.Size(674, 484);
             this.Split1.SplitterDistance = 244;
             this.Split1.TabIndex = 3;
@@ -644,18 +650,20 @@ namespace CyControl
             this.DeviceTreeView.TabIndex = 0;
             this.DeviceTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.DeviceTreeView_AfterSelect);
             // 
-            // TabPages
+            // tool650
             // 
-            this.TabPages.Controls.Add(this.DescrTab);
-            this.TabPages.Controls.Add(this.XferTab);
-            this.TabPages.Controls.Add(this.DriversTab);
-            this.TabPages.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.TabPages.Location = new System.Drawing.Point(0, 0);
-            this.TabPages.Name = "TabPages";
-            this.TabPages.SelectedIndex = 0;
-            this.TabPages.Size = new System.Drawing.Size(426, 484);
-            this.TabPages.TabIndex = 0;
-            this.TabPages.SelectedIndexChanged += new System.EventHandler(this.Form1_Resize);
+            this.tool650.AccessibleName = "650Tool";
+            this.tool650.Controls.Add(this.DescrTab);
+            this.tool650.Controls.Add(this.XferTab);
+            this.tool650.Controls.Add(this.DriversTab);
+            this.tool650.Controls.Add(this.tabPage1);
+            this.tool650.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tool650.Location = new System.Drawing.Point(0, 0);
+            this.tool650.Name = "tool650";
+            this.tool650.SelectedIndex = 0;
+            this.tool650.Size = new System.Drawing.Size(426, 484);
+            this.tool650.TabIndex = 0;
+            this.tool650.SelectedIndexChanged += new System.EventHandler(this.Form1_Resize);
             // 
             // DescrTab
             // 
@@ -684,6 +692,7 @@ namespace CyControl
             // XferTab
             // 
             this.XferTab.BackColor = System.Drawing.Color.Gainsboro;
+            this.XferTab.Controls.Add(this.Button_Init);
             this.XferTab.Controls.Add(this.button1);
             this.XferTab.Controls.Add(this.IsPacket);
             this.XferTab.Controls.Add(this.Clear);
@@ -714,6 +723,16 @@ namespace CyControl
             this.XferTab.Size = new System.Drawing.Size(418, 458);
             this.XferTab.TabIndex = 1;
             this.XferTab.Text = "Data Transfers";
+            // 
+            // Button_Init
+            // 
+            this.Button_Init.Location = new System.Drawing.Point(247, 63);
+            this.Button_Init.Name = "Button_Init";
+            this.Button_Init.Size = new System.Drawing.Size(75, 23);
+            this.Button_Init.TabIndex = 29;
+            this.Button_Init.Text = "Init";
+            this.Button_Init.UseVisualStyleBackColor = true;
+            this.Button_Init.Click += new System.EventHandler(this.Button_Init_Click);
             // 
             // button1
             // 
@@ -747,6 +766,7 @@ namespace CyControl
             // 
             // XferDataBox
             // 
+            this.XferDataBox.HidePromptOnLeave = true;
             this.XferDataBox.Location = new System.Drawing.Point(156, 29);
             this.XferDataBox.Mask = resources.GetString("XferDataBox.Mask");
             this.XferDataBox.Name = "XferDataBox";
@@ -1015,6 +1035,50 @@ namespace CyControl
             this.MSCDeviceBox.UseVisualStyleBackColor = true;
             this.MSCDeviceBox.CheckedChanged += new System.EventHandler(this.CyUSBDeviceBox_CheckedChanged);
             // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.buttShowData);
+            this.tabPage1.Controls.Add(this.initBut);
+            this.tabPage1.Controls.Add(this.textBox3);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(418, 458);
+            this.tabPage1.TabIndex = 3;
+            this.tabPage1.Text = "650Tool";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // buttShowData
+            // 
+            this.buttShowData.Location = new System.Drawing.Point(6, 35);
+            this.buttShowData.Name = "buttShowData";
+            this.buttShowData.Size = new System.Drawing.Size(75, 23);
+            this.buttShowData.TabIndex = 3;
+            this.buttShowData.Text = "ShowData";
+            this.buttShowData.UseVisualStyleBackColor = true;
+            // 
+            // initBut
+            // 
+            this.initBut.Location = new System.Drawing.Point(6, 6);
+            this.initBut.Name = "initBut";
+            this.initBut.Size = new System.Drawing.Size(75, 23);
+            this.initBut.TabIndex = 2;
+            this.initBut.Text = "initBut";
+            this.initBut.UseVisualStyleBackColor = true;
+            this.initBut.Click += new System.EventHandler(this.initBut_Click);
+            // 
+            // textBox3
+            // 
+            this.textBox3.BackColor = System.Drawing.SystemColors.Info;
+            this.textBox3.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.textBox3.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox3.Location = new System.Drawing.Point(3, 202);
+            this.textBox3.Multiline = true;
+            this.textBox3.Name = "textBox3";
+            this.textBox3.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBox3.Size = new System.Drawing.Size(412, 253);
+            this.textBox3.TabIndex = 1;
+            // 
             // FOpenDialog
             // 
             this.FOpenDialog.DefaultExt = "iic";
@@ -1055,13 +1119,15 @@ namespace CyControl
             this.Split1.ResumeLayout(false);
             this.gb.ResumeLayout(false);
             this.gb.PerformLayout();
-            this.TabPages.ResumeLayout(false);
+            this.tool650.ResumeLayout(false);
             this.DescrTab.ResumeLayout(false);
             this.DescrTab.PerformLayout();
             this.XferTab.ResumeLayout(false);
             this.XferTab.PerformLayout();
             this.DriversTab.ResumeLayout(false);
             this.DriversTab.PerformLayout();
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1080,7 +1146,7 @@ namespace CyControl
         private System.Windows.Forms.ToolStripStatusLabel StatusLabel;
         private System.Windows.Forms.SplitContainer Split1;
         private System.Windows.Forms.TreeView DeviceTreeView;
-        private System.Windows.Forms.TabControl TabPages;
+        private System.Windows.Forms.TabControl tool650;
         private System.Windows.Forms.TabPage DescrTab;
         private System.Windows.Forms.TabPage XferTab;
         private System.Windows.Forms.TextBox DescText;
@@ -1145,6 +1211,11 @@ namespace CyControl
         private System.Windows.Forms.ToolStripButton Stop;
         private System.Windows.Forms.ToolStripButton Pause;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.Button Button_Init;
+        private System.Windows.Forms.Button initBut;
+        private System.Windows.Forms.Button buttShowData;
     }
 }
 

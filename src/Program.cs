@@ -17,6 +17,7 @@ namespace CyControl
             try
             {
                 Application.Run(new Form1());
+
             }
             catch (Exception e)
             {

@@ -2855,5 +2855,253 @@ namespace CyControl
             Form2 f2 = new Form2();
             f2.Show(this);
         }
+
+        private void Button_Init_Click(object sender, EventArgs e)
+        {
+            // test msg
+            funcVendorTransferData("In", "0xf3", "0x0000", "0x0000", 64, "");
+
+            // init 650
+            funcVendorTransferData("In", "0xb8", "0x0000", "0x0000", 1, "");
+
+            funcVendorTransferData("Out", "0xc0", "0x0000", "0x0000", 2, "62 62");
+
+            funcVendorTransferData("Out", "0xc0", "0x0000", "0x0000", 2, "70 70");
+
+            funcVendorTransferData("Out", "0xc4", "0x0000", "0x0000", 2, "05 05");
+
+            for (int i = 0; i <= 3; i++)
+            {
+                funcVendorTransferData("In", "0xb8", "0x0000", "0x0000", 1, "");
+
+                funcVendorTransferData("Out", "0xc0", "0x0000", "0x0000", 2, "62 62");
+            }
+
+
+        }
+
+        private void initBut_Click(object sender, EventArgs e)
+        {
+            // test msg
+            funcVendorTransferData("In", "0xf3", "0x0000", "0x0000", 64, "");
+
+            // init 650
+            funcVendorTransferData("In", "0xb8", "0x0000", "0x0000", 1, "");
+
+            funcVendorTransferData("Out", "0xc0", "0x0000", "0x0000", 2, "62 62");
+
+            funcVendorTransferData("Out", "0xc0", "0x0000", "0x0000", 2, "70 70");
+
+            funcVendorTransferData("Out", "0xc4", "0x0000", "0x0000", 2, "05 05");
+
+            for (int i = 0; i <= 3; i++)
+            {
+                funcVendorTransferData("In", "0xb8", "0x0000", "0x0000", 1, "");
+
+                funcVendorTransferData("Out", "0xc0", "0x0000", "0x0000", 2, "62 62");
+            }
+
+        }
+
+        private void funcVendorTransferData (
+            String strDirection,
+            String strReqCode,
+            String strValue,
+            String strIndex,
+            int    intTbytes,
+            String strOutBuffer)
+        {
+            if (curHidReport != null)
+            {
+                
+                return;
+            }
+
+            if (curHidDev != null)
+            {
+                MessageBox.Show("Select a HID feature, input or output in the device tree.", "No report selected");
+                return;
+            }
+
+            if (curEndpt == null)
+            {
+                MessageBox.Show("Select <bulk> <iso> <int> endpoint enabled in the device tree.", "No endpoint selected");
+                return;
+            }
+
+            int bytes = 0;
+
+            try
+            {
+                bytes = intTbytes;
+            }
+            catch (Exception exc)
+            {
+                if (bytes < 1)
+                {
+                    //Just to remove warning
+                    exc.ToString();
+
+                    MessageBox.Show("Enter a valid number of bytes to transfer.", "Invalid Byte Count");
+                    return;
+                }
+            }
+
+            byte[] buffer = new byte[bytes];
+            bool bXferCompleted = false;
+
+            // Setting control endpt direction needs to occur before BuildDataCaption call
+            CyControlEndPoint ctrlEpt = curEndpt as CyControlEndPoint;
+            if (ctrlEpt != null)
+                ctrlEpt.Direction = DirectionBox.Text.Equals("In") ? CyConst.DIR_FROM_DEVICE : CyConst.DIR_TO_DEVICE;
+
+            // Stuff the output buffer
+            if (!curEndpt.bIn)
+            {
+                string[] hexTokens = strOutBuffer.Split(' ');
+
+                int i = 0;
+
+                //foreach (string tok in hexTokens)
+                for (int j = 0; j < bytes; j++)
+                {
+                    string tok;
+
+                    try
+                    {
+                        tok = hexTokens[j];
+                    }
+                    catch
+                    {
+                        tok = "";
+                    }
+
+                    if (tok.Length > 0)
+                    {
+                        try
+                        {
+                            buffer[i++] = (byte)Convert.ToInt32(tok, 16);
+                        }
+                        catch (Exception exc)
+                        {
+                            MessageBox.Show(exc.Message, "Input Error");
+                            return;
+                        }
+                    }
+                }
+            }
+
+            BuildDataCaption();
+            OutputBox.Text += dataCaption;
+            OutputBox.SelectionStart = OutputBox.Text.Length;
+            OutputBox.ScrollToCaret();
+
+            curEndpt.TimeOut = 2000;
+
+            if (ctrlEpt != null)
+            {
+                ctrlEpt.Target = CyConst.TGT_DEVICE;
+                ctrlEpt.ReqType = CyConst.REQ_VENDOR;
+
+                ctrlEpt.Direction = strDirection.Equals("In") ? CyConst.DIR_FROM_DEVICE : CyConst.DIR_TO_DEVICE;
+
+                try
+                {
+                    ctrlEpt.ReqCode = (byte)Convert.ToInt16(strReqCode, 16); //(byte)Util.HexToInt(ReqCodeBox.Text);
+                    ctrlEpt.Value = (ushort)Convert.ToInt16(strValue, 16); //(ushort)Util.HexToInt(wValueBox.Text);
+                    ctrlEpt.Index = (ushort)Convert.ToInt16(strIndex, 16); //(ushort)Util.HexToInt(wIndexBox.Text);
+                }
+                catch (Exception exc)
+                {
+                    MessageBox.Show(exc.Message, "Input Error");
+                    return;
+                }
+
+                bXferCompleted = ctrlEpt.XferData(ref buffer, ref bytes);
+
+
+                if (bRecording && (script_stream != null))
+                {
+                    Xaction.ConfigNum = fx2.Config;
+                    Xaction.IntfcNum = 0;
+                    Xaction.AltIntfc = fx2.AltIntfc;
+                    Xaction.EndPtAddr = ctrlEpt.Address;
+                    Xaction.Tag = 0;
+
+                    Xaction.bReqType = (byte)(ctrlEpt.Direction | ctrlEpt.ReqType | ctrlEpt.Target);
+                    Xaction.CtlReqCode = ctrlEpt.ReqCode;
+                    Xaction.wValue = ctrlEpt.Value;
+                    Xaction.wIndex = ctrlEpt.Index;
+                    Xaction.DataLen = (uint)bytes;
+                    Xaction.Timeout = ctrlEpt.TimeOut / 1000;
+                    Xaction.RecordSize = (uint)bytes + TTransaction.TotalHeaderSize;
+
+                    //Write xaction and buffer
+                    Xaction.WriteToStream(script_stream);
+                    Xaction.WriteFromBuffer(script_stream, ref buffer, ref bytes);
+                }
+            }
+
+            bool IsPkt = IsPacket.Checked ? true : false;
+
+            CyBulkEndPoint bulkEpt = curEndpt as CyBulkEndPoint;
+            if (bulkEpt != null)
+            {
+                bXferCompleted = bulkEpt.XferData(ref buffer, ref bytes, IsPkt);
+                CheckForScripting(ref buffer, ref bytes);
+            }
+
+            CyIsocEndPoint isocEpt = curEndpt as CyIsocEndPoint;
+            if (isocEpt != null)
+            {
+                isocEpt.XferSize = Convert.ToInt32(NumBytesBox.Text);
+
+                int pkts = bytes / isocEpt.MaxPktSize;
+                if ((bytes % isocEpt.MaxPktSize) > 0) pkts++;
+                ISO_PKT_INFO[] Iskpt = new ISO_PKT_INFO[pkts];
+                bXferCompleted = isocEpt.XferData(ref buffer, ref bytes, ref Iskpt);
+                if (bXferCompleted)
+                {
+                    int MainBufOffset = 0;
+                    int tmpBufOffset = 0;
+                    byte[] tmpbuf = new byte[bytes];
+                    // Check all packets and  if Iso in/out packet is not succeeded then don't update the buffer.
+                    for (int i = 0; i < pkts; i++)
+                    {
+                        if (Iskpt[i].Status != 0)
+                        {
+                            //updated the buffer based on the status of the packets
+                            //skip that buffer
+                        }
+                        else
+                        {
+                            for (int j = 0; j < Iskpt[i].Length; j++)
+                            {
+                                tmpbuf[tmpBufOffset] = buffer[MainBufOffset + j]; // get the received/transfered data in the temparary buffer
+                                tmpBufOffset++;
+                            }
+                        }
+                        MainBufOffset += isocEpt.MaxPktSize;
+                    }
+                    // Now copy the temparary buffer to main buffer to display
+                    for (int x = 0; x < tmpBufOffset; x++)
+                    {
+                        buffer[x] = tmpbuf[x]; // Updated the main buffer with the whatever data has been received / transfered.
+                    }
+                }
+                //bXferCompleted = isocEpt.XferData(ref buffer, ref bytes);                
+                CheckForScripting(ref buffer, ref bytes);
+            }
+
+            CyInterruptEndPoint intEpt = curEndpt as CyInterruptEndPoint;
+            if (intEpt != null)
+            {
+                bXferCompleted = intEpt.XferData(ref buffer, ref bytes, IsPkt);
+                CheckForScripting(ref buffer, ref bytes);
+            }
+
+            DisplayXferData(buffer, bytes, bXferCompleted);
+        }
+
     }
 }

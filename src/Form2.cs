@@ -15,6 +15,10 @@ namespace CyControl
 {
     public partial class Form2 : Form
     {
+        // vendor variables
+        
+
+
         public Form2()
         {
             InitializeComponent();
@@ -24,6 +28,7 @@ namespace CyControl
         // vendor functions 
         private void initCharts()
         {
+            Coords a = new Coords(3, 4);
 
             int[,] array = new int[,] {
             {1,8,9,7,105,11,50,999,500,1},
@@ -67,5 +72,18 @@ namespace CyControl
         }
     }
 
+    public struct Coords
+    {
+        public Coords(double x, double y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        public double X { get; }
+        public double Y { get; }
+
+        public override string ToString() => $"({X}, {Y})";
+    }
 
 }
