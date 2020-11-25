@@ -50,6 +50,18 @@ namespace CyControl
         int Sync_Form_Resize = 0;
         long Max_Ctlxfer_size;
 
+        //
+        // debug tool global values.
+        //
+        String strCurrentPrecision;
+        byte[] bufferByteData = new byte[1024];
+        //short[] dataFrame = new short[88064];
+        Form2 gf2 = new Form2();
+        CyUSBEndPoint bulkReadTag;
+        int gCntFramePackage;
+        
+        
+
         /* Summary
             Main entry to the application through Constructor
         */
@@ -93,6 +105,8 @@ namespace CyControl
             curCyUsbDev = null;
             curHidDev = null;
             curHidReport = null;
+            bulkReadTag = null;
+            gCntFramePackage = (int)Precision.x1;
 
         }
 
@@ -116,9 +130,13 @@ namespace CyControl
         {
             DeviceTreeView.Nodes.Clear();
             DescText.Text = "";
-
+            
             foreach (USBDevice dev in usbDevices)
+            {
                 DeviceTreeView.Nodes.Add(dev.Tree);
+            }
+                
+                
 
         }
 
@@ -139,6 +157,10 @@ namespace CyControl
 
             curEndpt = selNode.Tag as CyUSBEndPoint;
             curCyUsbDev = selNode.Tag as CyUSBDevice;
+
+            // store bulk read device information.
+            if (curEndpt != null && curEndpt.ToString().Contains("86h"))
+                bulkReadTag = curEndpt;
 
             curHidDev = null;
             curHidReport = null;
@@ -1018,6 +1040,9 @@ namespace CyControl
             wValueLabel.Visible = bControlEpt;
             wIndexBox.Visible = bControlEpt;
             wIndexLabel.Visible = bControlEpt;
+            button1.Visible = bControlEpt;
+            initBut.Visible = bControlEpt;
+            Button_Init.Visible = bControlEpt;
 
             int oBoxAdj = bControlEpt ? 200 : 125;
 
@@ -2849,57 +2874,10 @@ namespace CyControl
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {   
-            // show form 2 in a new form.
-            Form2 f2 = new Form2();
-            f2.Show(this);
-        }
 
-        private void Button_Init_Click(object sender, EventArgs e)
-        {
-            // test msg
-            funcVendorTransferData("In", "0xf3", "0x0000", "0x0000", 64, "");
-
-            // init 650
-            funcVendorTransferData("In", "0xb8", "0x0000", "0x0000", 1, "");
-
-            funcVendorTransferData("Out", "0xc0", "0x0000", "0x0000", 2, "62 62");
-
-            funcVendorTransferData("Out", "0xc0", "0x0000", "0x0000", 2, "70 70");
-
-            funcVendorTransferData("Out", "0xc4", "0x0000", "0x0000", 2, "05 05");
-
-            for (int i = 0; i <= 3; i++)
-            {
-                funcVendorTransferData("In", "0xb8", "0x0000", "0x0000", 1, "");
-
-                funcVendorTransferData("Out", "0xc0", "0x0000", "0x0000", 2, "62 62");
-            }
-
-
-        }
 
         private void initBut_Click(object sender, EventArgs e)
-        {
-            // test msg
-            funcVendorTransferData("In", "0xf3", "0x0000", "0x0000", 64, "");
-
-            // init 650
-            funcVendorTransferData("In", "0xb8", "0x0000", "0x0000", 1, "");
-
-            funcVendorTransferData("Out", "0xc0", "0x0000", "0x0000", 2, "62 62");
-
-            funcVendorTransferData("Out", "0xc0", "0x0000", "0x0000", 2, "70 70");
-
-            funcVendorTransferData("Out", "0xc4", "0x0000", "0x0000", 2, "05 05");
-
-            for (int i = 0; i <= 3; i++)
-            {
-                funcVendorTransferData("In", "0xb8", "0x0000", "0x0000", 1, "");
-
-                funcVendorTransferData("Out", "0xc0", "0x0000", "0x0000", 2, "62 62");
-            }
+        { // other tab
 
         }
 
@@ -2909,7 +2887,8 @@ namespace CyControl
             String strValue,
             String strIndex,
             int    intTbytes,
-            String strOutBuffer)
+            String strOutBuffer
+            )
         {
             if (curHidReport != null)
             {
@@ -2953,7 +2932,7 @@ namespace CyControl
             // Setting control endpt direction needs to occur before BuildDataCaption call
             CyControlEndPoint ctrlEpt = curEndpt as CyControlEndPoint;
             if (ctrlEpt != null)
-                ctrlEpt.Direction = DirectionBox.Text.Equals("In") ? CyConst.DIR_FROM_DEVICE : CyConst.DIR_TO_DEVICE;
+                ctrlEpt.Direction = strDirection.Equals("In") ? CyConst.DIR_FROM_DEVICE : CyConst.DIR_TO_DEVICE;
 
             // Stuff the output buffer
             if (!curEndpt.bIn)
@@ -2991,10 +2970,10 @@ namespace CyControl
                 }
             }
 
-            BuildDataCaption();
-            OutputBox.Text += dataCaption;
-            OutputBox.SelectionStart = OutputBox.Text.Length;
-            OutputBox.ScrollToCaret();
+            //BuildDataCaption();
+            //OutputBox.Text += dataCaption;
+            //OutputBox.SelectionStart = OutputBox.Text.Length;
+            //OutputBox.ScrollToCaret();
 
             curEndpt.TimeOut = 2000;
 
@@ -3100,8 +3079,193 @@ namespace CyControl
                 CheckForScripting(ref buffer, ref bytes);
             }
 
-            DisplayXferData(buffer, bytes, bXferCompleted);
+            //DisplayXferData(buffer, bytes, bXferCompleted);
+            
+            
         }
 
+        private void funcBulkRead ()
+        {
+   
+            if (curEndpt == null)
+            {
+                MessageBox.Show("Select <bulk> <iso> <int> endpoint enabled in the device tree.", "No endpoint selected");
+                return;
+            }
+
+            int bytes = 1024;
+
+            byte[] buffer = new byte[bytes];
+            bool bXferCompleted = false;
+
+            // Setting control endpt direction needs to occur before BuildDataCaption call
+            CyControlEndPoint ctrlEpt = curEndpt as CyControlEndPoint;
+            if (ctrlEpt != null)
+                ctrlEpt.Direction = CyConst.DIR_FROM_DEVICE;
+
+            curEndpt.TimeOut = 2000;
+
+            bool IsPkt = IsPacket.Checked ? true : false;
+            
+            CyBulkEndPoint bulkEpt = bulkReadTag as CyBulkEndPoint;
+            if (bulkEpt != null)
+            {
+                bXferCompleted = bulkEpt.XferData(ref buffer, ref bytes, IsPkt);
+                CheckForScripting(ref buffer, ref bytes);
+            }
+
+            bufferByteData = buffer;
+            //DisplayXferData(buffer, bytes, bXferCompleted);
+
+        }
+
+        private void precisionCombox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            String strPrecsisonInput = "";
+            // update global value
+            strCurrentPrecision = precisionCombox.Text;
+
+            // update dsp setting of precisions.
+            switch (precisionCombox.Text)
+            {
+                case "x1":
+                    strPrecsisonInput = "07 07";
+                    gCntFramePackage = 344;
+                    gf2.currentPrecision = (int)Precision.x1;
+                    break;
+                case "x2":
+                    strPrecsisonInput = "06 06";
+                    gCntFramePackage = 141;
+                    gf2.currentPrecision = (int)Precision.x2;
+                    break;
+                case "x4":
+                    strPrecsisonInput = "05 05";
+                    gCntFramePackage = 83;
+                    gf2.currentPrecision = (int)Precision.x4;
+                    break;
+                case "x8":
+                    strPrecsisonInput = "04 04";
+                    gCntFramePackage = 40;
+                    gf2.currentPrecision = (int)Precision.x8;
+                    break;
+                case "x16":
+                    strPrecsisonInput = "03 03";
+                    gCntFramePackage = 34;
+                    gf2.currentPrecision = (int)Precision.x16;
+                    break;
+                case "x32":
+                    strPrecsisonInput = "02 02";
+                    gCntFramePackage = 32;
+                    gf2.currentPrecision = (int)Precision.x32;
+                    break;
+                default:
+                    strPrecsisonInput = "07 07";
+                    gCntFramePackage = 344;
+                    gf2.currentPrecision = (int)Precision.x1;
+                    break;
+            }
+            
+            funcVendorTransferData("Out", "0xc0", "0x0000", "0x0000", 2, "62 62");
+            funcVendorTransferData("Out", "0xc0", "0x0000", "0x0000", 2, "70 70");
+            funcVendorTransferData("Out", "0xc4", "0x0000", "0x0000", 2, strPrecsisonInput);
+        }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            // show form 2 in a new form.
+
+            gf2.Show(this);
+        }
+
+        private void Button_Init_Click(object sender, EventArgs e)
+        {
+            // test msg
+
+            String strTemp = "";
+            funcVendorTransferData("In", "0xf3", "0x0000", "0x0000", 512, "");
+  
+
+            // init 650
+            funcVendorTransferData("In", "0xb8", "0x0000", "0x0000", 1, "");
+                
+            funcVendorTransferData("Out", "0xc0", "0x0000", "0x0000", 2, "62 62");
+
+            funcVendorTransferData("Out", "0xc0", "0x0000", "0x0000", 2, "70 70");
+
+            funcVendorTransferData("Out", "0xc4", "0x0000", "0x0000", 2, "05 05");
+
+            for (int i = 0; i <= 1; i++)
+            {
+                funcVendorTransferData("In", "0xb8", "0x0000", "0x0000", 1, "");
+
+                funcVendorTransferData("Out", "0xc0", "0x0000", "0x0000", 2, "62 62");
+            }
+
+
+        }
+
+        private void buttom_A_package_Click(object sender, EventArgs e)
+        {
+            //int varBreakvalue = 10000;
+            funcVendorTransferData("In", "0xb8", "0x0000", "0x0000", 1, "");
+            funcVendorTransferData("In", "0xb3", "0x0000", "0x0000", 2, "");
+            funcVendorTransferData("In", "0xb6", "0x0000", "0x0000", 1, "");
+
+            while (funcCheckReadReady());
+
+            // read
+
+            funcVendorTransferData("Out", "0xb5", "0x0000", "0x0000", 2, "02 00");
+            funcBulkRead();
+
+
+        }
+
+        private bool funcCheckReadReady ()
+        {
+            bool result = true;
+            funcVendorTransferData("In", "0xc2", "0x0000", "0x0000", 2, "");
+
+            if (bufferByteData[1] == 0x02) result = false;
+
+            return result;
+        }
+
+        private void buttFrame_Click(object sender, EventArgs e)
+        {
+
+            // init frame size by precision.
+            int countFrameData = 0;
+            long tempData = 0;
+            bool flagCheckVaild = false;
+
+            // init bulk read reg.
+            funcVendorTransferData("In", "0xb8", "0x0000", "0x0000", 1, "");
+            funcVendorTransferData("In", "0xb3", "0x0000", "0x0000", 2, "");
+            funcVendorTransferData("In", "0xb6", "0x0000", "0x0000", 1, "");
+
+            // read a frame by the size of precision
+            for (int cnt = 0; cnt < gCntFramePackage; cnt++)
+            {
+                while (funcCheckReadReady()) ;
+                funcVendorTransferData("Out", "0xb5", "0x0000", "0x0000", 2, "02 00");
+                funcBulkRead();
+                for (int cntPkg = 0; cntPkg < 1024; cntPkg+=4)
+                {
+                    tempData =  (bufferByteData[cntPkg] << 24 & 0xFF000000) + 
+                                (bufferByteData[cntPkg+1] << 16 & 0x00FF0000) + 
+                                (bufferByteData[cntPkg+2] << 8 & 0x0000FF00) + 
+                                (bufferByteData[cntPkg+3] & 0x000000FF);
+                    gf2.dataFrame[cntPkg] = (short)(tempData/ 150000000.0);
+                    if (tempData >= 45000000) flagCheckVaild = true;
+                    countFrameData++;
+                }
+            }
+
+            // update form 2
+            if (flagCheckVaild)
+                gf2.updateForm2();
+            else
+                MessageBox.Show("invalid data", "Please check the machine");
+        }
     }
 }

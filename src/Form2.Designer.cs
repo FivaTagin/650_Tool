@@ -63,6 +63,7 @@ namespace CyControl
             this.Controls.Add(this.chart1);
             this.Name = "Form2";
             this.Text = "Show Data From 650";
+            this.Load += new System.EventHandler(this.Form2_Load);
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             this.ResumeLayout(false);
 

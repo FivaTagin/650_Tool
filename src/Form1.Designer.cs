@@ -188,6 +188,10 @@ namespace CyControl
             this.DescrTab = new System.Windows.Forms.TabPage();
             this.DescText = new System.Windows.Forms.TextBox();
             this.XferTab = new System.Windows.Forms.TabPage();
+            this.label6 = new System.Windows.Forms.Label();
+            this.buttom_A_package = new System.Windows.Forms.Button();
+            this.precisionCombox = new System.Windows.Forms.ComboBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.Button_Init = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.IsPacket = new System.Windows.Forms.CheckBox();
@@ -224,6 +228,7 @@ namespace CyControl
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.FOpenDialog = new System.Windows.Forms.OpenFileDialog();
             this.FSave = new System.Windows.Forms.SaveFileDialog();
+            this.buttFrame = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.StatusBar.SuspendLayout();
@@ -248,7 +253,7 @@ namespace CyControl
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(674, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1054, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -365,7 +370,7 @@ namespace CyControl
             this.Load_Monitor});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(674, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(1054, 25);
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -547,7 +552,7 @@ namespace CyControl
             this.StatLabel});
             this.StatusBar.Location = new System.Drawing.Point(0, 533);
             this.StatusBar.Name = "StatusBar";
-            this.StatusBar.Size = new System.Drawing.Size(674, 22);
+            this.StatusBar.Size = new System.Drawing.Size(1054, 22);
             this.StatusBar.TabIndex = 2;
             // 
             // StatusLabel
@@ -576,8 +581,8 @@ namespace CyControl
             // Split1.Panel2
             // 
             this.Split1.Panel2.Controls.Add(this.tool650);
-            this.Split1.Size = new System.Drawing.Size(674, 484);
-            this.Split1.SplitterDistance = 244;
+            this.Split1.Size = new System.Drawing.Size(1054, 484);
+            this.Split1.SplitterDistance = 263;
             this.Split1.TabIndex = 3;
             // 
             // gb
@@ -646,7 +651,7 @@ namespace CyControl
             this.DeviceTreeView.HideSelection = false;
             this.DeviceTreeView.Location = new System.Drawing.Point(0, 0);
             this.DeviceTreeView.Name = "DeviceTreeView";
-            this.DeviceTreeView.Size = new System.Drawing.Size(244, 484);
+            this.DeviceTreeView.Size = new System.Drawing.Size(263, 484);
             this.DeviceTreeView.TabIndex = 0;
             this.DeviceTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.DeviceTreeView_AfterSelect);
             // 
@@ -661,7 +666,7 @@ namespace CyControl
             this.tool650.Location = new System.Drawing.Point(0, 0);
             this.tool650.Name = "tool650";
             this.tool650.SelectedIndex = 0;
-            this.tool650.Size = new System.Drawing.Size(426, 484);
+            this.tool650.Size = new System.Drawing.Size(787, 484);
             this.tool650.TabIndex = 0;
             this.tool650.SelectedIndexChanged += new System.EventHandler(this.Form1_Resize);
             // 
@@ -671,7 +676,7 @@ namespace CyControl
             this.DescrTab.Location = new System.Drawing.Point(4, 22);
             this.DescrTab.Name = "DescrTab";
             this.DescrTab.Padding = new System.Windows.Forms.Padding(3);
-            this.DescrTab.Size = new System.Drawing.Size(418, 458);
+            this.DescrTab.Size = new System.Drawing.Size(779, 458);
             this.DescrTab.TabIndex = 0;
             this.DescrTab.Text = "Descriptor Info";
             this.DescrTab.UseVisualStyleBackColor = true;
@@ -685,13 +690,18 @@ namespace CyControl
             this.DescText.Name = "DescText";
             this.DescText.ReadOnly = true;
             this.DescText.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.DescText.Size = new System.Drawing.Size(412, 452);
+            this.DescText.Size = new System.Drawing.Size(773, 452);
             this.DescText.TabIndex = 0;
             this.DescText.WordWrap = false;
             // 
             // XferTab
             // 
             this.XferTab.BackColor = System.Drawing.Color.Gainsboro;
+            this.XferTab.Controls.Add(this.buttFrame);
+            this.XferTab.Controls.Add(this.label6);
+            this.XferTab.Controls.Add(this.buttom_A_package);
+            this.XferTab.Controls.Add(this.precisionCombox);
+            this.XferTab.Controls.Add(this.label5);
             this.XferTab.Controls.Add(this.Button_Init);
             this.XferTab.Controls.Add(this.button1);
             this.XferTab.Controls.Add(this.IsPacket);
@@ -720,13 +730,58 @@ namespace CyControl
             this.XferTab.Location = new System.Drawing.Point(4, 22);
             this.XferTab.Name = "XferTab";
             this.XferTab.Padding = new System.Windows.Forms.Padding(3);
-            this.XferTab.Size = new System.Drawing.Size(418, 458);
+            this.XferTab.Size = new System.Drawing.Size(779, 458);
             this.XferTab.TabIndex = 1;
             this.XferTab.Text = "Data Transfers";
             // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(522, 138);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(35, 13);
+            this.label6.TabIndex = 33;
+            this.label6.Text = "label6";
+            // 
+            // buttom_A_package
+            // 
+            this.buttom_A_package.Location = new System.Drawing.Point(659, 52);
+            this.buttom_A_package.Name = "buttom_A_package";
+            this.buttom_A_package.Size = new System.Drawing.Size(75, 23);
+            this.buttom_A_package.TabIndex = 32;
+            this.buttom_A_package.Text = "A package";
+            this.buttom_A_package.UseVisualStyleBackColor = true;
+            this.buttom_A_package.Click += new System.EventHandler(this.buttom_A_package_Click);
+            // 
+            // precisionCombox
+            // 
+            this.precisionCombox.FormattingEnabled = true;
+            this.precisionCombox.Items.AddRange(new object[] {
+            "x1",
+            "x4",
+            "x8",
+            "x16",
+            "x32"});
+            this.precisionCombox.Location = new System.Drawing.Point(529, 54);
+            this.precisionCombox.Name = "precisionCombox";
+            this.precisionCombox.Size = new System.Drawing.Size(44, 21);
+            this.precisionCombox.TabIndex = 31;
+            this.precisionCombox.Tag = "x1;x2;x4;x8;x16;x32";
+            this.precisionCombox.SelectedIndexChanged += new System.EventHandler(this.precisionCombox_SelectedIndexChanged);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(473, 57);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(50, 13);
+            this.label5.TabIndex = 30;
+            this.label5.Text = "Precision";
+            this.label5.Visible = false;
+            // 
             // Button_Init
             // 
-            this.Button_Init.Location = new System.Drawing.Point(247, 63);
+            this.Button_Init.Location = new System.Drawing.Point(659, 23);
             this.Button_Init.Name = "Button_Init";
             this.Button_Init.Size = new System.Drawing.Size(75, 23);
             this.Button_Init.TabIndex = 29;
@@ -736,9 +791,9 @@ namespace CyControl
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(325, 63);
+            this.button1.Location = new System.Drawing.Point(476, 23);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(85, 26);
+            this.button1.Size = new System.Drawing.Size(177, 26);
             this.button1.TabIndex = 28;
             this.button1.Text = "ShowDatainGraph";
             this.button1.UseVisualStyleBackColor = true;
@@ -970,11 +1025,11 @@ namespace CyControl
             this.OutputBox.BackColor = System.Drawing.SystemColors.Info;
             this.OutputBox.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.OutputBox.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.OutputBox.Location = new System.Drawing.Point(3, 202);
+            this.OutputBox.Location = new System.Drawing.Point(3, 214);
             this.OutputBox.Multiline = true;
             this.OutputBox.Name = "OutputBox";
             this.OutputBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.OutputBox.Size = new System.Drawing.Size(412, 253);
+            this.OutputBox.Size = new System.Drawing.Size(773, 241);
             this.OutputBox.TabIndex = 0;
             // 
             // DriversTab
@@ -985,7 +1040,7 @@ namespace CyControl
             this.DriversTab.Controls.Add(this.MSCDeviceBox);
             this.DriversTab.Location = new System.Drawing.Point(4, 22);
             this.DriversTab.Name = "DriversTab";
-            this.DriversTab.Size = new System.Drawing.Size(418, 458);
+            this.DriversTab.Size = new System.Drawing.Size(779, 458);
             this.DriversTab.TabIndex = 2;
             this.DriversTab.Text = "Device Class Selection";
             this.DriversTab.UseVisualStyleBackColor = true;
@@ -1043,7 +1098,7 @@ namespace CyControl
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(418, 458);
+            this.tabPage1.Size = new System.Drawing.Size(779, 458);
             this.tabPage1.TabIndex = 3;
             this.tabPage1.Text = "650Tool";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -1076,7 +1131,7 @@ namespace CyControl
             this.textBox3.Multiline = true;
             this.textBox3.Name = "textBox3";
             this.textBox3.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox3.Size = new System.Drawing.Size(412, 253);
+            this.textBox3.Size = new System.Drawing.Size(773, 253);
             this.textBox3.TabIndex = 1;
             // 
             // FOpenDialog
@@ -1090,12 +1145,22 @@ namespace CyControl
             // 
             this.FSave.Title = "Save the script file as";
             // 
+            // buttFrame
+            // 
+            this.buttFrame.Location = new System.Drawing.Point(659, 81);
+            this.buttFrame.Name = "buttFrame";
+            this.buttFrame.Size = new System.Drawing.Size(75, 23);
+            this.buttFrame.TabIndex = 34;
+            this.buttFrame.Text = "A Frame";
+            this.buttFrame.UseVisualStyleBackColor = true;
+            this.buttFrame.Click += new System.EventHandler(this.buttFrame_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(674, 555);
+            this.ClientSize = new System.Drawing.Size(1054, 555);
             this.Controls.Add(this.Split1);
             this.Controls.Add(this.StatusBar);
             this.Controls.Add(this.toolStrip1);
@@ -1216,6 +1281,11 @@ namespace CyControl
         private System.Windows.Forms.Button Button_Init;
         private System.Windows.Forms.Button initBut;
         private System.Windows.Forms.Button buttShowData;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ComboBox precisionCombox;
+        private System.Windows.Forms.Button buttom_A_package;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button buttFrame;
     }
 }
 
