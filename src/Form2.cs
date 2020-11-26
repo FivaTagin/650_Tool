@@ -21,19 +21,18 @@ namespace CyControl
 
         public void updateForm2()
         {
+            int boundary = (this.currentPrecision * 1024 / 4);
             // clear and update series
             foreach (var s in this.chart1.Series)
             {
                 s.Points.Clear();
-                for (int index = 0; index < currentPrecision; index++)
+                s.Name = "650 Data, Precision: " + this.currentPrecision.ToString();
+                for (int index = 0; index < boundary; index++)
                 {
                     s.Points.AddXY(index, dataFrame[index]);
                 }
+                break;
             }
-              
-
-
-
         }
 
 
@@ -53,7 +52,7 @@ namespace CyControl
 
 
             //標題 最大數值
-            Series series1 = new Series("第一條線", 1000);
+            Series series1 = new Series("650 Data", 100000);
             
 
             //設定線條顏色
@@ -85,7 +84,7 @@ namespace CyControl
             
 
             //標題
-            this.chart1.Titles.Add("標題");
+            this.chart1.Titles.Add("650 Data Analysis");
         }
 
         private void Form2_Load(object sender, EventArgs e)

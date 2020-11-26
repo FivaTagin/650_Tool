@@ -82,6 +82,7 @@ namespace CyControl
             Sync_Form_Resize = 1;
             Form1_Resize(this, null);
 
+            OutputBox.Text = "650 Test Tool Init.";
 
         }
 
@@ -2890,18 +2891,6 @@ namespace CyControl
             String strOutBuffer
             )
         {
-            if (curHidReport != null)
-            {
-                
-                return;
-            }
-
-            if (curHidDev != null)
-            {
-                MessageBox.Show("Select a HID feature, input or output in the device tree.", "No report selected");
-                return;
-            }
-
             if (curEndpt == null)
             {
                 MessageBox.Show("Select <bulk> <iso> <int> endpoint enabled in the device tree.", "No endpoint selected");
@@ -2970,11 +2959,6 @@ namespace CyControl
                 }
             }
 
-            //BuildDataCaption();
-            //OutputBox.Text += dataCaption;
-            //OutputBox.SelectionStart = OutputBox.Text.Length;
-            //OutputBox.ScrollToCaret();
-
             curEndpt.TimeOut = 2000;
 
             if (ctrlEpt != null)
@@ -3029,67 +3013,15 @@ namespace CyControl
                 bXferCompleted = bulkEpt.XferData(ref buffer, ref bytes, IsPkt);
                 CheckForScripting(ref buffer, ref bytes);
             }
-
-            CyIsocEndPoint isocEpt = curEndpt as CyIsocEndPoint;
-            if (isocEpt != null)
-            {
-                isocEpt.XferSize = Convert.ToInt32(NumBytesBox.Text);
-
-                int pkts = bytes / isocEpt.MaxPktSize;
-                if ((bytes % isocEpt.MaxPktSize) > 0) pkts++;
-                ISO_PKT_INFO[] Iskpt = new ISO_PKT_INFO[pkts];
-                bXferCompleted = isocEpt.XferData(ref buffer, ref bytes, ref Iskpt);
-                if (bXferCompleted)
-                {
-                    int MainBufOffset = 0;
-                    int tmpBufOffset = 0;
-                    byte[] tmpbuf = new byte[bytes];
-                    // Check all packets and  if Iso in/out packet is not succeeded then don't update the buffer.
-                    for (int i = 0; i < pkts; i++)
-                    {
-                        if (Iskpt[i].Status != 0)
-                        {
-                            //updated the buffer based on the status of the packets
-                            //skip that buffer
-                        }
-                        else
-                        {
-                            for (int j = 0; j < Iskpt[i].Length; j++)
-                            {
-                                tmpbuf[tmpBufOffset] = buffer[MainBufOffset + j]; // get the received/transfered data in the temparary buffer
-                                tmpBufOffset++;
-                            }
-                        }
-                        MainBufOffset += isocEpt.MaxPktSize;
-                    }
-                    // Now copy the temparary buffer to main buffer to display
-                    for (int x = 0; x < tmpBufOffset; x++)
-                    {
-                        buffer[x] = tmpbuf[x]; // Updated the main buffer with the whatever data has been received / transfered.
-                    }
-                }
-                //bXferCompleted = isocEpt.XferData(ref buffer, ref bytes);                
-                CheckForScripting(ref buffer, ref bytes);
-            }
-
-            CyInterruptEndPoint intEpt = curEndpt as CyInterruptEndPoint;
-            if (intEpt != null)
-            {
-                bXferCompleted = intEpt.XferData(ref buffer, ref bytes, IsPkt);
-                CheckForScripting(ref buffer, ref bytes);
-            }
-
-            //DisplayXferData(buffer, bytes, bXferCompleted);
-            
-            
+            bufferByteData = buffer;
         }
 
         private void funcBulkRead ()
         {
    
-            if (curEndpt == null)
+            if (bulkReadTag == null)
             {
-                MessageBox.Show("Select <bulk> <iso> <int> endpoint enabled in the device tree.", "No endpoint selected");
+                MessageBox.Show("bulkReadTag failure.", "No endpoint selected");
                 return;
             }
 
@@ -3199,7 +3131,8 @@ namespace CyControl
 
                 funcVendorTransferData("Out", "0xc0", "0x0000", "0x0000", 2, "62 62");
             }
-
+            
+            OutputBox.Text += Environment.NewLine + " Init 650 Machine Finished.";
 
         }
 
@@ -3226,7 +3159,6 @@ namespace CyControl
             funcVendorTransferData("In", "0xc2", "0x0000", "0x0000", 2, "");
 
             if (bufferByteData[1] == 0x02) result = false;
-
             return result;
         }
 
