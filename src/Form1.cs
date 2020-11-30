@@ -56,7 +56,8 @@ namespace CyControl
         String strCurrentPrecision;
         byte[] bufferByteData = new byte[1024];
         //short[] dataFrame = new short[88064];
-        Form2 gf2 = new Form2();
+        
+        Form2 gf2;
         CyUSBEndPoint bulkReadTag;
         int gCntFramePackage;
         
@@ -67,6 +68,13 @@ namespace CyControl
         */
         public Form1()
         {
+            double tempData = 0.0;
+            int tempByte = -100;
+
+            tempByte = (0xff << 24) | (0xff << 16) | (0xa7 << 8 ) | (0x00);
+            tempData = tempByte / 150000000.0;
+            
+
             Initialize();
 
             //Initializes form resources
@@ -82,7 +90,10 @@ namespace CyControl
             Sync_Form_Resize = 1;
             Form1_Resize(this, null);
 
-            OutputBox.Text = "650 Test Tool Init.";
+            gf2 = new Form2(this);
+
+            OutputBox.Text = "650 Test Tool Init. Test Data: ";
+            OutputBox.Text += tempData.ToString() + "\r\n";
 
         }
 
@@ -3092,7 +3103,7 @@ namespace CyControl
                     break;
                 default:
                     strPrecsisonInput = "07 07";
-                    gCntFramePackage = 344;
+                    gCntFramePackage = 32;
                     gf2.currentPrecision = (int)Precision.x1;
                     break;
             }
@@ -3100,11 +3111,12 @@ namespace CyControl
             funcVendorTransferData("Out", "0xc0", "0x0000", "0x0000", 2, "62 62");
             funcVendorTransferData("Out", "0xc0", "0x0000", "0x0000", 2, "70 70");
             funcVendorTransferData("Out", "0xc4", "0x0000", "0x0000", 2, strPrecsisonInput);
+            gf2.updateForm2();
         }
         private void button1_Click(object sender, EventArgs e)
         {
             // show form 2 in a new form.
-
+            gf2.updateForm2();
             gf2.Show(this);
         }
 
@@ -3132,12 +3144,13 @@ namespace CyControl
                 funcVendorTransferData("Out", "0xc0", "0x0000", "0x0000", 2, "62 62");
             }
             
-            OutputBox.Text += Environment.NewLine + " Init 650 Machine Finished.";
+            OutputBox.Text += Environment.NewLine + " Init 650 Machine Finished.\r\n";
 
         }
 
         private void buttom_A_package_Click(object sender, EventArgs e)
         {
+            long tempData = 0;
             //int varBreakvalue = 10000;
             funcVendorTransferData("In", "0xb8", "0x0000", "0x0000", 1, "");
             funcVendorTransferData("In", "0xb3", "0x0000", "0x0000", 2, "");
@@ -3150,6 +3163,19 @@ namespace CyControl
             funcVendorTransferData("Out", "0xb5", "0x0000", "0x0000", 2, "02 00");
             funcBulkRead();
 
+            for (int cntPkg = 0; cntPkg < 1024; cntPkg += 4)
+            {
+                tempData = (bufferByteData[cntPkg] << 24) |
+                            (bufferByteData[cntPkg + 1] << 16) |
+                            (bufferByteData[cntPkg + 2] << 8) |
+                            (bufferByteData[cntPkg + 3]);
+                OutputBox.Text +=   bufferByteData[cntPkg].ToString() + " "+
+                                    bufferByteData[cntPkg+1].ToString() + " " +
+                                    bufferByteData[cntPkg+2].ToString() + " " +
+                                    bufferByteData[cntPkg+3].ToString() + " " +
+                                    (double)(tempData / 150000000.0) + "\r\n ";  
+
+            }
 
         }
 
@@ -3167,7 +3193,7 @@ namespace CyControl
 
             // init frame size by precision.
             int countFrameData = 0;
-            long tempData = 0;
+            int tempData = 0;
             bool flagCheckVaild = false;
 
             // init bulk read reg.
@@ -3176,28 +3202,56 @@ namespace CyControl
             funcVendorTransferData("In", "0xb6", "0x0000", "0x0000", 1, "");
 
             // read a frame by the size of precision
-            for (int cnt = 0; cnt < gCntFramePackage; cnt++)
+            for (int cnt = 0; cnt < gCntFramePackage - 1; cnt++)
             {
                 while (funcCheckReadReady()) ;
                 funcVendorTransferData("Out", "0xb5", "0x0000", "0x0000", 2, "02 00");
                 funcBulkRead();
                 for (int cntPkg = 0; cntPkg < 1024; cntPkg+=4)
                 {
-                    tempData =  (bufferByteData[cntPkg] << 24 & 0xFF000000) + 
-                                (bufferByteData[cntPkg+1] << 16 & 0x00FF0000) + 
-                                (bufferByteData[cntPkg+2] << 8 & 0x0000FF00) + 
-                                (bufferByteData[cntPkg+3] & 0x000000FF);
-                    gf2.dataFrame[cntPkg] = (short)(tempData/ 150000000.0);
+                    if (bufferByteData[cntPkg + 3] != 0x00)
+                    {
+                        MessageBox.Show("invalid data, LSB must be 0x00", "Please check the machine");
+                        return;
+                    }
+                    tempData = (bufferByteData[cntPkg] << 24) | 
+                                (bufferByteData[cntPkg + 1] << 16) | 
+                                (bufferByteData[cntPkg + 2] << 8) | 
+                                (0x00);
+
+                    gf2.dataFrame[cnt * 256 + cntPkg] = (tempData/ 150000000.0);
+
+
+
                     if (tempData >= 45000000) flagCheckVaild = true;
+                    
                     countFrameData++;
                 }
+
+                OutputBox.Text += bufferByteData[0].ToString() + " " +
+                                bufferByteData[1].ToString() + " " +
+                                bufferByteData[2].ToString() + " " +
+                                bufferByteData[3].ToString() + " " +
+                                (double)(tempData / 150000000.0) + " " +
+                                gf2.dataFrame[cnt*256] + "\r\n ";
             }
+            OutputBox.Text += "This Frame Recived!\r\n";
 
             // update form 2
             if (flagCheckVaild)
+            {
                 gf2.updateForm2();
+                //gf2.Show(this);
+            }
             else
                 MessageBox.Show("invalid data", "Please check the machine");
+
+
+        }
+
+        public void funcRenewForm2 ()
+        {
+            gf2 = new Form2(this);
         }
     }
 }
