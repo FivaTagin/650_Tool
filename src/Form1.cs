@@ -9,6 +9,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Threading;
+using System.Timers;
 using CyUSB;
 
 namespace CyControl
@@ -53,15 +54,16 @@ namespace CyControl
         //
         // debug tool global values.
         //
+        private static System.Timers.Timer gTimer;
         String strCurrentPrecision;
         byte[] bufferByteData = new byte[1024];
-        //short[] dataFrame = new short[88064];
-        
         Form2 gf2;
         CyUSBEndPoint bulkReadTag;
         int gCntFramePackage;
+        bool gflagAutoFrame;
+        string fileName = @"Frame.txt";
         
-        
+
 
         /* Summary
             Main entry to the application through Constructor
@@ -119,6 +121,16 @@ namespace CyControl
             curHidReport = null;
             bulkReadTag = null;
             gCntFramePackage = (int)Precision.x1;
+            gflagAutoFrame = false;
+
+            // initial timer callbacks
+            // Create a timer with a ten second interval.
+            gTimer = new System.Timers.Timer(1000);
+            // Hook up the Elapsed event for the timer.
+            gTimer.Elapsed += funcCallbackAutoReadFrame;
+            gTimer.AutoReset = false;
+            gTimer.Start();
+
 
         }
 
@@ -157,6 +169,7 @@ namespace CyControl
         */
         private void DeviceTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            DeviceTreeView.ExpandAll();
             XferTextBox.Text = "";
             XferDataBox.Text = "";
 
@@ -3190,11 +3203,24 @@ namespace CyControl
 
         private void buttFrame_Click(object sender, EventArgs e)
         {
+            funcCatchAframe();
+            
+        }
 
+        private void funcCatchAframe()
+        {
             // init frame size by precision.
             int countFrameData = 0;
             int tempData = 0;
             bool flagCheckVaild = false;
+            FileInfo fi = new FileInfo(fileName);
+            // Check if file already exists. If yes, delete it.     
+            if (fi.Exists)
+            {
+                fi.Delete();
+            }
+            StreamWriter sw = fi.CreateText();
+
 
             // init bulk read reg.
             funcVendorTransferData("In", "0xb8", "0x0000", "0x0000", 1, "");
@@ -3204,54 +3230,84 @@ namespace CyControl
             // read a frame by the size of precision
             for (int cnt = 0; cnt < gCntFramePackage - 1; cnt++)
             {
-                while (funcCheckReadReady()) ;
+                while (funcCheckReadReady());
                 funcVendorTransferData("Out", "0xb5", "0x0000", "0x0000", 2, "02 00");
                 funcBulkRead();
-                for (int cntPkg = 0; cntPkg < 1024; cntPkg+=4)
+                for (int cntPkg = 0; cntPkg < 1024; cntPkg += 4)
                 {
-                    if (bufferByteData[cntPkg + 3] != 0x00)
-                    {
-                        MessageBox.Show("invalid data, LSB must be 0x00", "Please check the machine");
-                        return;
-                    }
-                    tempData = (bufferByteData[cntPkg] << 24) | 
-                                (bufferByteData[cntPkg + 1] << 16) | 
-                                (bufferByteData[cntPkg + 2] << 8) | 
+
+                    tempData = (bufferByteData[cntPkg] << 24) |
+                                (bufferByteData[cntPkg + 1] << 16) |
+                                (bufferByteData[cntPkg + 2] << 8) |
                                 (0x00);
 
-                    gf2.dataFrame[cnt * 256 + cntPkg] = (tempData/ 150000000.0);
+                    gf2.dataFrame[cnt * 256 + cntPkg] = (tempData / 150000000.0);
 
-
+                    // Create a new file     
+                    sw.WriteLine("{0}",gf2.dataFrame[cnt * 256 + cntPkg]);
+                   
 
                     if (tempData >= 45000000) flagCheckVaild = true;
-                    
+
                     countFrameData++;
                 }
-
+                /* debug msg
                 OutputBox.Text += bufferByteData[0].ToString() + " " +
                                 bufferByteData[1].ToString() + " " +
                                 bufferByteData[2].ToString() + " " +
                                 bufferByteData[3].ToString() + " " +
                                 (double)(tempData / 150000000.0) + " " +
                                 gf2.dataFrame[cnt*256] + "\r\n ";
+                */
             }
-            OutputBox.Text += "This Frame Recived!\r\n";
+            //OutputBox.Text += "This Frame Recived!\r\n";
 
             // update form 2
             if (flagCheckVaild)
             {
                 gf2.updateForm2();
-                //gf2.Show(this);
             }
             else
                 MessageBox.Show("invalid data", "Please check the machine");
 
-
+            sw.Close();
         }
 
         public void funcRenewForm2 ()
         {
             gf2 = new Form2(this);
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked) // automatically continue read frames 
+            {
+                gflagAutoFrame = true;
+            } else
+            {
+                gflagAutoFrame = false;
+            }
+        }
+
+        private void funcCallbackAutoReadFrame(Object source, ElapsedEventArgs e)
+        {
+            //OutputBox.Text += "...";
+            gTimer.Stop();
+           
+            
+            // prevent mult-thread crisis for timer callback usage.
+            Invoke(new MethodInvoker(() =>
+            {   
+                if (gflagAutoFrame)
+                    funcCatchAframe();
+            }));
+
+            gTimer.Start();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            DeviceTreeView.ExpandAll();
         }
     }
 }

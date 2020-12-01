@@ -60,6 +60,7 @@ namespace CyControl
             this.chart1.Series.Add(series1);
             this.chart1.Size = new System.Drawing.Size(954, 572);
             this.chart1.TabIndex = 0;
+            this.chart1.TabStop = false;
             this.chart1.Text = "chart1";
             // 
             // toolStrip1

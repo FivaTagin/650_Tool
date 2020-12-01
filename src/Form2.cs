@@ -53,16 +53,27 @@ namespace CyControl
 
             // clear and update series
             this.chart1.DataBind();
+            
             this.chart1.ChartAreas[0].AxisY.LabelStyle.Format = "0.000000";
+            this.chart1.ChartAreas[0].AxisX.LabelStyle.Format = "0";
+            this.chart1.ChartAreas[0].AxisY.Maximum = 5;
+            this.chart1.ChartAreas[0].AxisY.Minimum = -5;
+            this.chart1.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
+            this.chart1.ChartAreas[0].AxisY.MajorTickMark.Enabled = false;
+            //this.chart1.ChartAreas[0].AxisX.ScaleView.Zoomable = true;
+            this.chart1.ChartAreas[0].AxisY.ScaleView.Zoomable = true;
+            this.chart1.MouseWheel += chart1_MouseWheel;
             foreach (var s in this.chart1.Series)
             {   
                 
                 s.Points.Clear();
                 s.Name = "650 Data, Precision: " + this.currentPrecision.ToString();
+                s.Color = Color.Blue;
                 s.ChartType = SeriesChartType.Line;
                 
+                
 
-                for (int index = 0; index < boundary; index+=varRange)
+                for (int index = 0; index < boundary; index++)
                 {
                     s.Points.AddXY(index, dataFrame[index]);
                 }
@@ -106,7 +117,7 @@ namespace CyControl
            
 
             //將數值顯示在線上
-            series1.IsValueShownAsLabel = true;
+            //series1.IsValueShownAsLabel = true;
             
 
 
@@ -133,17 +144,15 @@ namespace CyControl
 
         private void Form2_FormClosing(object sender, FormClosingEventArgs e)
         {
-            //if (DialogResult.No == MessageBox.Show("Exit without saving changes?", "Data Not Saved", MessageBoxButtons.YesNo))
-            //    e.Cancel = true;
             this.f1.funcRenewForm2();
         }
 
         private void funcTestChart()
         {
             Random r = new Random();
-            for (int cnt = 0; cnt < dataFrame.Length; cnt++)
+            for (int cnt = 0; cnt < dataFrame.Length; cnt+= 1000)
             {
-                this.dataFrame[cnt] = r.Next(-10, 10);
+                this.dataFrame[cnt] = r.Next(-1, 2);
                 
             }
             this.updateForm2();
@@ -161,6 +170,38 @@ namespace CyControl
             {
                 s.Points.Clear();
             }
+        }
+
+        private void chart1_MouseWheel(object sender, MouseEventArgs e)
+        {
+            var chart = (Chart)sender;
+            var xAxis = chart.ChartAreas[0].AxisX;
+            var yAxis = chart.ChartAreas[0].AxisY;
+
+            try
+            {
+                if (e.Delta < 0) // Scrolled down.
+                {
+                    xAxis.ScaleView.ZoomReset();
+                    yAxis.ScaleView.ZoomReset();
+                }
+                else if (e.Delta > 0) // Scrolled up.
+                {
+                    var xMin = xAxis.ScaleView.ViewMinimum;
+                    var xMax = xAxis.ScaleView.ViewMaximum;
+                    var yMin = yAxis.ScaleView.ViewMinimum;
+                    var yMax = yAxis.ScaleView.ViewMaximum;
+
+                    var posXStart = xAxis.PixelPositionToValue(e.Location.X) - (xMax - xMin) / 1.5;
+                    var posXFinish = xAxis.PixelPositionToValue(e.Location.X) + (xMax - xMin) / 1.5;
+                    var posYStart = yAxis.PixelPositionToValue(e.Location.Y) - (yMax - yMin) / 3;
+                    var posYFinish = yAxis.PixelPositionToValue(e.Location.Y) + (yMax - yMin) / 3;
+
+                    //xAxis.ScaleView.Zoom(posXStart, posXFinish);
+                    yAxis.ScaleView.Zoom(posYStart, posYFinish);
+                }
+            }
+            catch { }
         }
     }
     public enum Precision
@@ -186,5 +227,7 @@ namespace CyControl
 
         public override string ToString() => $"({X}, {Y})";
     }
+
+
 
 }

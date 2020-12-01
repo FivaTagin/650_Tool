@@ -188,6 +188,7 @@ namespace CyControl
             this.DescrTab = new System.Windows.Forms.TabPage();
             this.DescText = new System.Windows.Forms.TextBox();
             this.XferTab = new System.Windows.Forms.TabPage();
+            this.buttFrame = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.buttom_A_package = new System.Windows.Forms.Button();
             this.precisionCombox = new System.Windows.Forms.ComboBox();
@@ -228,7 +229,7 @@ namespace CyControl
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.FOpenDialog = new System.Windows.Forms.OpenFileDialog();
             this.FSave = new System.Windows.Forms.SaveFileDialog();
-            this.buttFrame = new System.Windows.Forms.Button();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.StatusBar.SuspendLayout();
@@ -697,6 +698,7 @@ namespace CyControl
             // XferTab
             // 
             this.XferTab.BackColor = System.Drawing.Color.Gainsboro;
+            this.XferTab.Controls.Add(this.checkBox1);
             this.XferTab.Controls.Add(this.buttFrame);
             this.XferTab.Controls.Add(this.label6);
             this.XferTab.Controls.Add(this.buttom_A_package);
@@ -733,6 +735,16 @@ namespace CyControl
             this.XferTab.Size = new System.Drawing.Size(779, 458);
             this.XferTab.TabIndex = 1;
             this.XferTab.Text = "Data Transfers";
+            // 
+            // buttFrame
+            // 
+            this.buttFrame.Location = new System.Drawing.Point(659, 81);
+            this.buttFrame.Name = "buttFrame";
+            this.buttFrame.Size = new System.Drawing.Size(75, 23);
+            this.buttFrame.TabIndex = 34;
+            this.buttFrame.Text = "A Frame";
+            this.buttFrame.UseVisualStyleBackColor = true;
+            this.buttFrame.Click += new System.EventHandler(this.buttFrame_Click);
             // 
             // label6
             // 
@@ -1145,15 +1157,16 @@ namespace CyControl
             // 
             this.FSave.Title = "Save the script file as";
             // 
-            // buttFrame
+            // checkBox1
             // 
-            this.buttFrame.Location = new System.Drawing.Point(659, 81);
-            this.buttFrame.Name = "buttFrame";
-            this.buttFrame.Size = new System.Drawing.Size(75, 23);
-            this.buttFrame.TabIndex = 34;
-            this.buttFrame.Text = "A Frame";
-            this.buttFrame.UseVisualStyleBackColor = true;
-            this.buttFrame.Click += new System.EventHandler(this.buttFrame_Click);
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(659, 110);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(80, 17);
+            this.checkBox1.TabIndex = 35;
+            this.checkBox1.Text = "checkBox1";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // Form1
             // 
@@ -1171,6 +1184,7 @@ namespace CyControl
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "USB Control Center";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.Resize += new System.EventHandler(this.Form1_Resize);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -1286,6 +1300,7 @@ namespace CyControl
         private System.Windows.Forms.Button buttom_A_package;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button buttFrame;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
 
