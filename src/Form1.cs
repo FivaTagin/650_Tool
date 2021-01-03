@@ -123,6 +123,8 @@ namespace CyControl
             gCntFramePackage = (int)Precision.x1;
             gflagAutoFrame = false;
 
+
+
             // initial timer callbacks
             // Create a timer with a ten second interval.
             gTimer = new System.Timers.Timer(1000);
@@ -3137,7 +3139,7 @@ namespace CyControl
         {
             // test msg
 
-            String strTemp = "";
+            
             funcVendorTransferData("In", "0xf3", "0x0000", "0x0000", 512, "");
   
 
@@ -3169,7 +3171,7 @@ namespace CyControl
             funcVendorTransferData("In", "0xb3", "0x0000", "0x0000", 2, "");
             funcVendorTransferData("In", "0xb6", "0x0000", "0x0000", 1, "");
 
-            while (funcCheckReadReady());
+            //while (funcCheckReadReady());
 
             // read
 
